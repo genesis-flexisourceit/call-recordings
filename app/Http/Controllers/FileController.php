@@ -57,7 +57,7 @@ class FileController extends Controller
             $recording->path = $path;
             $recording->type = $request->file('file')->getClientOriginalExtension();
             $recording->file_size = $request->file('file')->getSize();
-            $recording->status = 'Complete';
+            $recording->status = 'Incomplete';
             $recording->save();
 
             return response(['message' => 'File has been uploaded.', 'recording' => $recording], 200);

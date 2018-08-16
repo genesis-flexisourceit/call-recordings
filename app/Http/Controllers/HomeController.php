@@ -83,8 +83,9 @@ class HomeController extends Controller
 
                 /*printf('Transcript: %s' . PHP_EOL, $alternative['transcript']);*/
             }
-
+            $recording->status = 'Complete';
             $recording->transcription()->save(new Transcription(['words' => implode("<br/>", $lines)]));
+            $recording->save();
 
             return response(['message' => implode("<br/>", $lines)], 200);
         }

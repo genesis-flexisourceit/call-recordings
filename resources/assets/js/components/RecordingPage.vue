@@ -4,17 +4,17 @@
             <div class="card">
                 <div class="card-header">
                     Call Recording Transcriber
-                    <a class="btn btn-link float-right btn-sm" href="javascript:void(0)" @click="showModal">Upload</a>
+                    <a class="btn btn-link float-right btn-sm" href="javascript:void(0)" @click="showModal"><i class="fas fa-upload"></i> Upload</a>
                 </div>
 
                 <div class="card-body">
-                    <select-file></select-file>
-                    <recording-list :recordings="recordings"></recording-list>
+                    <!--<select-file :recordings="recordings"></select-file>-->
+                    <recording-list :recordings="recordings" v-on:files-deleted="updateList"></recording-list>
                 </div>
             </div>
         </div>
-        <b-modal :title="modal.title" hide-footer v-model="modal.show" no-close-on-backdrop lazy>
-            <upload-file></upload-file>
+        <b-modal :title="modal.title" hide-footer v-model="modal.show" no-close-on-backdrop lazy :hide-header-close="modal.hideClose">
+            <upload-file v-on:loading="modalLoading" v-on:loaded="modalLoaded" v-on:file-uploaded="fileUploaded"></upload-file>
         </b-modal>
     </div>
 </template>
@@ -29,20 +29,41 @@
         data(){
             return {
                 recordings : [],
+                recordingSelection: [],
                 modal : {
                     title: 'Upload New File',
                     show: false,
-                }
+                    hideClose: false,
+                },
             }
         },
         methods: {
             showModal : function(){
                 this.modal.show = true;
             },
+            modalLoading: function(){
+                this.modal.hideClose = true;
+            },
+            modalLoaded: function(){
+                this.modal.hideClose = false;
+            },
+            fileUploaded: function(recording){
+                this.recordings.push(recording);
+            },
+            pushToRecordingSelection: function(recording){
+                this.recordingSelection.push({
+                    label : recording.file_name + '.' + recording.type,
+                    value: recording.id,
+                });
+            },
+            updateList: function(recordings){
+                this.recordings = recordings;
+            }
         },
         beforeMount(){
+            let self = this;
             //Assign recordings injected from the home.blade
-            this.recordings = Laravel.recordings;
+            self.recordings = Laravel.recordings;
         }
     }
 </script>

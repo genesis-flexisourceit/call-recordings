@@ -6,13 +6,21 @@
  */
 
 require('./bootstrap');
+require('axios');
 
 window.Vue = require('vue');
-import BootstrapVue from 'bootstrap-vue'
+import BootstrapVue from 'bootstrap-vue';
+
 import { Modal } from 'bootstrap-vue/es/components';
+import vSelect from 'vue-select';
 
 Vue.use(BootstrapVue);
 Vue.use(Modal);
+
+// Before you create app
+Vue.config.devtools = true;
+Vue.prototype.$http = axios;
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -21,6 +29,7 @@ Vue.use(Modal);
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('recording-page', require('./components/RecordingPage.vue'));
+Vue.component('v-select', vSelect);
 
 const app = new Vue({
     el: '#app'

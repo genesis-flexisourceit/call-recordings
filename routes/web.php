@@ -13,3 +13,4 @@
 
 Route::get('/', 'HomeController@index');
 Route::resource('file', 'FileController');
+Route::get('transcribe/{id}', 'HomeController@transcribe');

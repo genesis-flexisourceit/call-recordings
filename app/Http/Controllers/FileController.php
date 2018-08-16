@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Recording;
 use App\Traits\Renameable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class FileController extends Controller
@@ -48,7 +49,7 @@ class FileController extends Controller
         }
 
         $originalCleanName = $this->removeExtension($request->file('file')->getClientOriginalName());
-        $path = $request->file('file')->storeAs('', $originalCleanName.'.mp3', 'gcs');
+        $path = $request->file('file')->storeAs('', uniqid().'.mp3', 'gcs');
 
         if($path){
             $recording = new Recording();
@@ -56,6 +57,7 @@ class FileController extends Controller
             $recording->path = $path;
             $recording->type = $request->file('file')->getClientOriginalExtension();
             $recording->file_size = $request->file('file')->getSize();
+            $recording->status = 'Complete';
             $recording->save();
 
             return response(['message' => 'File has been uploaded.', 'recording' => $recording], 200);
@@ -101,11 +103,18 @@ class FileController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  array  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        $ids = explode(",", $id);
+
+        $recordings = Recording::whereIn('id', $ids)->pluck('path')->toArray();
+        Recording::whereIn('id', $ids)->delete();
+
+        Storage::disk('gcs')->delete($recordings);
+
+        return response(null, 204);
     }
 }

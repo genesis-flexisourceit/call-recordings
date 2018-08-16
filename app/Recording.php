@@ -24,6 +24,7 @@ class Recording extends Model
         'file_name',
         'path',
         'type',
+        'status',
         'file_size'
     ];
 
@@ -39,6 +40,14 @@ class Recording extends Model
      */
     protected function getUrlAttribute()
     {
-        return Storage::url($this->path);
+        return Storage::disk('gcs')->url($this->path);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function transcription()
+    {
+        return $this->hasOne(Transcription::class, 'recording_id', 'id');
     }
 }
